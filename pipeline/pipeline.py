@@ -8,7 +8,7 @@ print("Menjalankan perintah turbostat...")
 turbostat_process = subprocess.Popen(command, shell=True)
 
 # Tunggu beberapa saat agar turbostat memulai
-time.sleep(5)
+time.sleep(6)
 
 # Langkah 2: Menjalankan code1.py
 print("Menjalankan code1.py...")
@@ -21,9 +21,14 @@ time.sleep(6)
 print("Menjalankan code2.py...")
 code2_process = subprocess.Popen(["python3", "code2.py"])
 
+print("Menunggu proses awal selesai...")
+time.sleep(10)
+
 # Langkah 5: Menjalankan code3.py
 print("Menjalankan code3.py...")
-code3_process = subprocess.Popen(["python3", "code3.py"])
+code3_process = subprocess.Popen(["gnome-terminal", "--", "python3", "code3.py"])
+
+
 
 # Opsional: Tunggu proses selesai (jika diperlukan)
 # code1_process.wait()
