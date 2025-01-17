@@ -8,7 +8,7 @@ print("Menjalankan perintah turbostat...")
 turbostat_process = subprocess.Popen(command, shell=True)
 
 # Tunggu beberapa saat agar turbostat memulai
-time.sleep(6)
+time.sleep(10)
 
 # Langkah 2: Menjalankan code1.py
 print("Menjalankan code1.py...")
