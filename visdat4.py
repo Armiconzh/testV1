@@ -7,10 +7,10 @@ from datetime import datetime, timedelta
 import pytz
 
 # Membaca data dari file CSV
-df = pd.read_csv("filtered_test2.csv")
-
-# Mengonversi kolom 'Time_Of_Day_Seconds' menjadi datetime dengan zona waktu WIB
-df['Time'] = pd.to_datetime(df['Time_Of_Day_Seconds'], unit='s') + timedelta(hours=7)
+def read_data():
+    df = pd.read_csv("filtered_test2.csv")
+    df['Time'] = pd.to_datetime(df['Time_Of_Day_Seconds'], unit='s') + timedelta(hours=7)
+    return df
 
 # Membuat aplikasi Dash
 app = dash.Dash(__name__)
@@ -22,22 +22,33 @@ app.layout = html.Div([
     # Dropdown untuk memilih kolom yang ingin ditambahkan
     dcc.Dropdown(
         id='column-dropdown',
-        options=[{'label': col, 'value': col} for col in df.columns if col not in ['Time', 'Time_Of_Day_Seconds']],
+        options=[{'label': col, 'value': col} for col in read_data().columns if col not in ['Time', 'Time_Of_Day_Seconds']],
         multi=True,  # Memungkinkan pemilihan beberapa kolom
         value=[],  # Nilai default kosong (grafik awal kosong)
         style={'width': '100%'}
     ),
     
     # Grafik untuk menampilkan data
-    dcc.Graph(id='time-series-graph')
+    dcc.Graph(id='time-series-graph'),
+    
+    # Interval untuk memperbarui grafik setiap detik
+    dcc.Interval(
+        id='interval-update',
+        interval=1000,  # Interval 1000 ms = 1 detik
+        n_intervals=0
+    )
 ])
 
 # Callback untuk memperbarui grafik berdasarkan kolom yang dipilih
 @app.callback(
     Output('time-series-graph', 'figure'),
-    [Input('column-dropdown', 'value')]
+    [Input('column-dropdown', 'value'),
+     Input('interval-update', 'n_intervals')]
 )
-def update_graph(selected_columns):
+def update_graph(selected_columns, n_intervals):
+    # Membaca data terbaru dari CSV
+    df = read_data()
+
     traces = []
     
     # Membuat trace untuk setiap kolom yang dipilih
