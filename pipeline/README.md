@@ -1,6 +1,6 @@
 # Automation Pipeline
 
-This project automates a multi-step process for monitoring and visualizing system performance data. The pipeline runs multiple scripts in sequence to collect, process, and visualize data.
+Automasi pipeline untuk melakukan analisis dan visualisasi turbostat menggunakan metode FDA dengan MSPlot untuk observasi anomali.
 
 ## Prerequisites
 
@@ -58,8 +58,4 @@ Ensure the following files are in the same directory:
 - **File Not Found**: Ensure that the required scripts and input files (`t1_log`) are in the correct directory.
 - **Dependency Errors**: Double-check that all dependencies are installed correctly using `pip install -r requirements.txt`.
 - **Permission Issues**: Ensure you have the necessary permissions to run `turbostat`.
-
-## License
-
-This project is licensed under the MIT License.
 
