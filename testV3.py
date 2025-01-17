@@ -12,37 +12,48 @@ def read_turbostat_log(file_path):
         print(f"File {file_path} tidak ditemukan.")
         return []
 
-# Fungsi untuk menulis data ke file CSV
+# Fungsi untuk menulis data ke file CSV dengan tab sebagai delimiter
 def write_to_csv(csv_path, data):
     try:
         with open(csv_path, 'a', newline='') as csvfile:
-            writer = csv.writer(csvfile)
+            writer = csv.writer(csvfile, delimiter='\t')  # Gunakan tab sebagai delimiter
             # Menulis data ke CSV file
             writer.writerow(data)
     except Exception as e:
         print(f"Terjadi kesalahan saat menulis ke CSV: {e}")
 
-# Fungsi untuk memproses data dan memperbarui CSV
+# Fungsi untuk membaca data yang sudah ada di CSV (untuk mencegah duplikasi)
+def read_existing_csv(csv_path):
+    existing_data = set()
+    try:
+        with open(csv_path, 'r') as csvfile:
+            reader = csv.reader(csvfile, delimiter='\t')  # Gunakan tab sebagai delimiter
+            for row in reader:
+                existing_data.add(tuple(row))  # Menggunakan tuple untuk perbandingan
+    except FileNotFoundError:
+        pass  # Jika file CSV belum ada, kita anggap data masih kosong
+    return existing_data
+
+# Fungsi untuk memproses data dan memperbarui CSV tanpa duplikasi
 def process_and_update_data():
     log_file = './TURBOSTAT_log'
     csv_file = 'TURBOSTAT_log.csv'
-    previous_data = []
+    
+    # Membaca data yang sudah ada di CSV untuk mencegah duplikasi
+    existing_data = read_existing_csv(csv_file)
 
     while True:
         # Membaca data terbaru dari file TURBOSTAT_log
         current_data = read_turbostat_log(log_file)
 
-        if current_data != previous_data:
-            # Jika data berubah, update file CSV
-            for line in current_data:
-                # Proses data per baris jika perlu (misalnya, memecah berdasarkan delimiter)
-                row = line.strip().split()  # Sesuaikan split dengan format data Anda
+        for line in current_data:
+            # Proses data per baris jika perlu (misalnya, memecah berdasarkan delimiter)
+            row = tuple(line.strip().split())  # Mengubah baris menjadi tuple untuk perbandingan
 
-                # Menulis data ke file CSV
+            # Jika baris ini belum ada di CSV, maka tambahkan
+            if row not in existing_data:
                 write_to_csv(csv_file, row)
-
-            # Simpan data terakhir yang sudah diproses
-            previous_data = current_data
+                existing_data.add(row)  # Menambahkan data baru ke set
 
         # Tunggu 1 detik sebelum memeriksa lagi
         time.sleep(1)
