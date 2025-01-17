@@ -18,7 +18,7 @@ def filter_data():
     df_filtered = df[(df['Core'] == '-') | (df['CPU'] == '-')]
 
     # Simpan ke file baru
-    df_filtered.to_csv(output_path, index=False)
+    df_filtered.to_csv(output_path, index=False, sep='\t')
 
 # Fungsi untuk memeriksa apakah file telah berubah
 def file_has_changed(last_modified_time):
