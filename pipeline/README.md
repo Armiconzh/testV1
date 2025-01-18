@@ -37,7 +37,7 @@ Ensure the following files are in the same directory:
 1. Run the main pipeline script:
 
     ```bash
-    python3 automation_pipeline.py
+    python3 pipeline.py
     ```
 
    The script will:
