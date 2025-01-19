@@ -11,7 +11,7 @@ from prog_ms_fda import ProgressiveFDA
 
 # Membaca data dari file CSV
 def read_data():
-    df = pd.read_csv("filtered_turbolog.csv")
+    df = pd.read_csv("./filtered_turbologv2.csv")
     df['Time'] = pd.to_datetime(df['Time_Of_Day_Seconds'], unit='s') + timedelta(hours=7)
     return df
 
@@ -21,7 +21,7 @@ app = dash.Dash(__name__)
 # Layout aplikasi
 app.layout = html.Div([
     html.H1('Time Series and MS Plot Visualization'),
-    
+
     # Dropdown untuk memilih kolom yang ingin ditambahkan
     dcc.Dropdown(
         id='column-dropdown',
@@ -30,37 +30,38 @@ app.layout = html.Div([
         value=[],  # Nilai default kosong (grafik awal kosong)
         style={'width': '100%'}
     ),
-    
+
     # Layout untuk menampilkan grafik
     html.Div([
         # Time Series Graph
-        dcc.Graph(id='time-series-graph'),
+        dcc.Graph(id='time-series-graph', config={'scrollZoom': True},),
 
         # MS Plot Graph
         dcc.Graph(id='ms-plot-graph'),
     ], style={'display': 'flex', 'flexDirection': 'column', 'gap': '20px'}),
 
-    # Interval untuk memperbarui grafik setiap detik
+    # Interval untuk memperbarui data
     dcc.Interval(
         id='interval-update',
-        interval=1000,  # Interval 1000 ms = 1 detik
+        interval=1000,  # Perbarui data setiap 1 detik
         n_intervals=0
     )
 ])
 
-# Callback untuk memperbarui grafik berdasarkan kolom yang dipilih
+# Callback untuk memperbarui grafik berdasarkan kolom yang dipilih dan seleksi pengguna
 @app.callback(
     [Output('time-series-graph', 'figure'),
      Output('ms-plot-graph', 'figure')],
     [Input('column-dropdown', 'value'),
+     Input('time-series-graph', 'relayoutData'),
      Input('interval-update', 'n_intervals')]
 )
-def update_graph(selected_columns, n_intervals):
+def update_graph(selected_columns, relayout_data, n_intervals):
     # Membaca data terbaru dari CSV
     df = read_data()
 
+    # Jika tidak ada kolom yang dipilih, tampilkan grafik kosong
     if not selected_columns:
-        # Jika tidak ada kolom yang dipilih, tampilkan grafik kosong
         return {
             'data': [],
             'layout': go.Layout(
@@ -76,6 +77,12 @@ def update_graph(selected_columns, n_intervals):
                 yaxis={'title': 'VO'}
             )
         }
+
+    # Filter data berdasarkan seleksi pengguna (jika ada)
+    if relayout_data and 'xaxis.range[0]' in relayout_data and 'xaxis.range[1]' in relayout_data:
+        start_time = pd.to_datetime(relayout_data['xaxis.range[0]'])
+        end_time = pd.to_datetime(relayout_data['xaxis.range[1]'])
+        df = df[(df['Time'] >= start_time) & (df['Time'] <= end_time)]
 
     # Membuat grafik Time Series berdasarkan kolom yang dipilih
     traces_time_series = []
