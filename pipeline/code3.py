@@ -11,7 +11,7 @@ from prog_ms_fda import ProgressiveFDA
 
 # Membaca data dari file CSV
 def read_data():
-    df = pd.read_csv("./filtered_turbologv2.csv")
+    df = pd.read_csv("./filtered_turbolog.csv")
     df['Time'] = pd.to_datetime(df['Time_Of_Day_Seconds'], unit='s') + timedelta(hours=7)
     return df
 
