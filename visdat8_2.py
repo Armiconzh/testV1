@@ -10,9 +10,6 @@ import sys
 import os
 from flask_caching import Cache
 
-# Tambahkan path untuk modul eksternal
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname("C:/Users/armic/Downloads/streaming-ms-plot-main/streaming-ms-plot-main/inc_ms_fda"), 'inc_ms_fda')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname("C:/Users/armic/Downloads/streaming-ms-plot-main/streaming-ms-plot-main/prog_ms_fda"), 'prog_ms_fda')))
 from inc_ms_fda import IncFDO
 from prog_ms_fda import ProgressiveFDA
 
